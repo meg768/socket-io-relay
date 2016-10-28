@@ -1,0 +1,24 @@
+{
+  "name": "socket-io-relay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meg768/socket-io-relay.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/meg768/socket-io-relay/issues"
+  },
+  "homepage": "https://github.com/meg768/socket-io-relay#readme",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "socket.io": "^1.5.1",
+    "yow": "^1.0.25"
+  }
+}
