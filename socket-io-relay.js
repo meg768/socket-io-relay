@@ -37,42 +37,30 @@ var App = function() {
 		console.log('A device connected.');
 
 
-		providerSocket.on('disconnect', function(data) {
-			console.log('Lost provider for service \'%s\'...', 'XXX');
-			providerSocket.conn.close();
-		});
-
 		providerSocket.on('register', function(options) {
-
-			var options = {};
-			options.commands = ['turnOn', 'turnOff'];
-			options.service = 'telldus';
-			options.events = ['tellstick'];
 
 			console.log('A provider registered service \'%s\'...', options.service);
 
 			providerSocket.join(options.service);
 
-
 			consumer.on('connection', function(consumerSocket) {
 
 
-				console.log('A consumer connected in room \'%s\'', options.service);
+				console.log('A consumer connected in service \'%s\'', options.service);
 
 
 				consumerSocket.join(options.service);
 
 				consumerSocket.on('disconnect', function(data) {
-					console.log('A consumer disconnected from room \'%s\'', options.service);
+					console.log('A consumer disconnected from service \'%s\'', options.service);
 
 				});
 
-				if (isArray(options.commands)) {
-					options.commands.forEach(function(command) {
-						console.log('Defining command', command)
-						consumerSocket.on(command, function(args) {
-							console.log('command', command);
-							provider.to(options.service).emit(command, args);
+				if (isArray(options.messages)) {
+					options.messages.forEach(function(message) {
+						console.log('Defining message \'%s\'.', message);
+						consumerSocket.on(message, function(args) {
+							provider.to(options.service).emit(message, args);
 						});
 
 					});
@@ -83,15 +71,21 @@ var App = function() {
 
 			if (isArray(options.events)) {
 				options.events.forEach(function(event) {
-					console.log('Defining event', event);
+					console.log('Defining event \'%s\'.', event);
 					providerSocket.on(event, function(args) {
-						console.log('event', event);
 						consumer.to(options.service).emit(event, args);
 					});
 
 				});
 
 			}
+
+			providerSocket.on('disconnect', function(data) {
+				console.log('Lost provider for service \'%s\'...', options.service);
+				providerSocket.conn.close();
+			});
+
+
 
 		});
 
