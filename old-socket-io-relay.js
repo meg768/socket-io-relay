@@ -12,7 +12,8 @@ var cmd = require('commander');
 var App = function() {
 	cmd.version('1.0.0');
 	cmd.option('-l --log', 'redirect logs to file');
-	cmd.option('-p --port <port>', 'specifies port to listen to (3000)', 3000);
+	cmd.option('-c --consumer <port>', 'specifies consumer port (3000)', 3000);
+	cmd.option('-p --provider <port>', 'specifies provider port (3001)', 3001);
 	cmd.parse(process.argv);
 
 	prefixLogs();
@@ -26,33 +27,31 @@ var App = function() {
 		redirectLogs(Path.join(path, name));
 	}
 
-	console.log('Listening to port %d...', cmd.port);
+	console.log('Listening to ports %d (provider) and %d (consumer)...', cmd.provider, cmd.consumer);
 
-	var io = require('socket.io').listen(cmd.port);
+	var provider = require('socket.io').listen(cmd.provider);
+	var consumer = require('socket.io').listen(cmd.consumer);
 
-	io.on('connection', function(socket) {
+	provider.on('connection', function(providerSocket) {
 
 		console.log('A device connected.');
 
-		socket.on('disconnect', function(options) {
-			console.log('Disconnected.');
-		});
 
-		socket.on('register', function(options) {
+		providerSocket.on('register', function(options) {
 
 			console.log('A provider registered service \'%s\'...', options.service);
 
-			socket.join(options.service);
+			providerSocket.join(options.service);
 
-			console.log('Creating namespace', '/' + options.service);
+			consumer.on('connection', function(consumerSocket) {
 
-			var namespace = io.of('/' + options.service);
 
-			namespace.on('connection', function(socket) {
+				console.log('A consumer connected in service \'%s\'', options.service);
 
-				console.log('A consumer connected to service \'%s\'', options.service);
 
-				socket.on('disconnect', function(data) {
+				consumerSocket.join(options.service);
+
+				consumerSocket.on('disconnect', function(data) {
 					console.log('A consumer disconnected from service \'%s\'', options.service);
 
 				});
@@ -60,38 +59,37 @@ var App = function() {
 				if (isArray(options.messages)) {
 					options.messages.forEach(function(message) {
 						console.log('Defining message \'%s\'.', message);
-						socket.on(message, function(args) {
-							io.to(options.service).emit(message, args);
+						consumerSocket.on(message, function(args) {
+							provider.to(options.service).emit(message, args);
 						});
 
 					});
 				}
 
-				socket.emit('hello');
+				consumerSocket.emit('hello');
 			});
 
 			if (isArray(options.events)) {
 				options.events.forEach(function(event) {
 					console.log('Defining event \'%s\'.', event);
-					socket.on(event, function(args) {
-						console.log('Sending event', event, args);
-						namespace.emit(event, args);
+					providerSocket.on(event, function(args) {
+						consumer.to(options.service).emit(event, args);
 					});
 
 				});
 
 			}
 
-			socket.on('disconnect', function(data) {
+			providerSocket.on('disconnect', function(data) {
 				console.log('Lost provider for service \'%s\'...', options.service);
-				socket.conn.close();
+				providerSocket.conn.close();
 			});
 
 
 
 		});
 
-		socket.emit('hello');
+		providerSocket.emit('hello');
 	});
 
 };
