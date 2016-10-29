@@ -39,7 +39,7 @@ var App = function() {
 
 
 	function register(nsp, messages, events) {
-		console.log('Defining namespace', nsp);
+		console.log('Defining namespace', nsp, messages, events);
 
 		var consumerNamespace = io.of('/' + nsp);
 		var providerNamespace = io.of('/' + nsp + '-provider');
@@ -78,8 +78,6 @@ var App = function() {
 
 	for (var nsp in config.namespaces) {
 
-		console.log('Defining namespace', nsp);
-		console.log(config.namespaces[nsp]);
 
 		register(nsp, config.namespaces[nsp].messages, config.namespaces[nsp].events);
 
