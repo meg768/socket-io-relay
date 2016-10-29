@@ -46,7 +46,7 @@ var App = function() {
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
 
-			var events = config.namespaces[namespace].messages;
+			var events = config.namespaces[namespace].events;
 
 			events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
