@@ -32,10 +32,10 @@ var App = function() {
 
 	io.on('connection', function(socket) {
 
-		console.log('A device connected.');
+		console.log('New socket connection ', socket.id);
 
 		socket.on('disconnect', function(options) {
-			console.log('Disconnected.');
+			console.log('Disconnect from ', socket.id);
 		});
 
 		socket.on('register', function(options) {
