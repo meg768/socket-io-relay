@@ -50,7 +50,7 @@ var App = function() {
 
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
-
+console.log(providerNamespace);
 			providerNamespace.__events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
 				socket.on(event, function(args) {
