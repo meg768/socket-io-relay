@@ -71,7 +71,7 @@ var App = function() {
 				console.log('Defining message \'%s\'.', message);
 				socket.on(message, function(args) {
 					console.log('Sending message', message, args);
-					providerNamespace.to(provider.id).emit(message, args);
+					providerNamespace.emit(message, args);
 				});
 
 			});
