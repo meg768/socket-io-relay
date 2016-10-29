@@ -37,7 +37,9 @@ var App = function() {
 	var config = readJSON(configFile);
 	console.log(config);
 
-	for (var namespace in config.namespaces) {
+	for (var key in config.namespaces) {
+
+		var namespace = key;
 		console.log(namespace);
 
 		var consumerNamespace = io.of('/' + namespace);
