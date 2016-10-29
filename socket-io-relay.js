@@ -37,18 +37,16 @@ var App = function() {
 	var config = readJSON(configFile);
 	console.log(config);
 
-	for (var key in config.namespaces) {
+	for (var namespace in config.namespaces) {
 
-		var namespace = key;
-		console.log(namespace);
+		var events   = config.namespaces[namespace].events;
+		var messages = config.namespaces[namespace].messages;
 
 		var consumerNamespace = io.of('/' + namespace);
 		var providerNamespace = io.of('/' + namespace + '-provider');
 
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
-
-			var events = config.namespaces[namespace].events;
 
 			events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
@@ -60,14 +58,10 @@ var App = function() {
 			});
 
 			socket.emit('hello');
-
-
 		});
 
 		consumerNamespace.on('connection', function(socket) {
 			console.log('New consumer socket connection ', socket.id);
-
-			var messages = config.namespaces[namespace].messages;
 
 			messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
@@ -79,8 +73,6 @@ var App = function() {
 			});
 
 			socket.emit('hello');
-
-
 		});
 	}
 
