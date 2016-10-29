@@ -53,6 +53,7 @@ var App = function() {
 				console.log('A consumer connected to service \'%s\'', options.service);
 
 				socket.emit('helloX');
+				socket.emit('hello');
 
 				socket.on('disconnect', function(data) {
 					console.log('A consumer disconnected from service \'%s\'', options.service);
