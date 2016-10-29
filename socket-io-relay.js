@@ -47,12 +47,23 @@ var App = function() {
 
 			});
 
+			socket.on("*",function(event,data) {
+				console.log('asd');
+				console.log(event);
+			    console.log(data);
+			});
+
 			socket.emit('hello');
-			socket.emit('connection');
 		});
 
 		consumerNamespace.on('connection', function(socket) {
 			console.log('New consumer socket connection', socket.id);
+
+			socket.on("*",function(event,data) {
+				console.log('q	qq');
+				console.log(event);
+			    console.log(data);
+			});
 
 			messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
@@ -63,7 +74,6 @@ var App = function() {
 			});
 
 			socket.emit('hello');
-			socket.emit('connection');
 		});
 
 	}
