@@ -34,13 +34,12 @@ var App = function() {
 	var io = require('socket.io').listen(cmd.port);
 
 	function register(provider, consumer, messages, events) {
-		console.log('Defining namespace', provider, consumer, messages, events);
 
 		var providerNamespace = io.of('/' + provider);
 		var consumerNamespace = io.of('/' + consumer);
 
 		providerNamespace.on('connection', function(socket) {
-			console.log('New provider socket connection ', socket.id);
+			console.log('New provider socket connection', socket.id);
 
 			events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
@@ -55,7 +54,7 @@ var App = function() {
 		});
 
 		consumerNamespace.on('connection', function(socket) {
-			console.log('New consumer socket connection ', socket.id);
+			console.log('New consumer socket connection', socket.id);
 
 			messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
