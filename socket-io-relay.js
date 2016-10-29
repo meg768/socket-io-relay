@@ -81,14 +81,6 @@ var App = function() {
 			register(entry.provider, entry.consumer, entry.messages, entry.events);
 		}
 
-		io.of('/provider').on('connection', function(socket) {
-			socket.on('register', function(entry) {
-
-				console.log('register!!!');
-				register(entry.provider, entry.consumer, entry.messages, entry.events);
-
-			});
-		});
 
 	}
 
