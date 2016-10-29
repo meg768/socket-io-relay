@@ -33,11 +33,6 @@ var App = function() {
 
 	var io = require('socket.io').listen(cmd.port);
 
-	var configFile = sprintf('%s/%s.config', __dirname, Path.parse(__filename).name);
-	var config = readJSON(configFile);
-	console.log(config);
-
-
 	function register(provider, consumer, messages, events) {
 		console.log('Defining namespace', provider, consumer, messages, events);
 
@@ -50,13 +45,13 @@ var App = function() {
 			events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
 				socket.on(event, function(args) {
-					console.log('Sending event', event, args);
 					consumerNamespace.emit(event, args);
 				});
 
 			});
 
 			socket.emit('hello');
+			socket.emit('connection');
 		});
 
 		consumerNamespace.on('connection', function(socket) {
@@ -65,23 +60,29 @@ var App = function() {
 			messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
 				socket.on(message, function(args) {
-					console.log('Sending message', message, args);
 					providerNamespace.emit(message, args);
 				});
 
 			});
 
 			socket.emit('hello');
+			socket.emit('connection');
 		});
 
 	}
 
-	for (var key in config.namespaces) {
-		var entry = config.namespaces[key];
-		register(entry.provider, entry.consumer, entry.messages, entry.events);
+	function run() {
+		var configFile = sprintf('%s/%s.config', __dirname, Path.parse(__filename).name);
+		var config = readJSON(configFile);
+
+		for (var key in config.namespaces) {
+			var entry = config.namespaces[key];
+			register(entry.provider, entry.consumer, entry.messages, entry.events);
+		}
 
 	}
 
+	run();
 
 };
 
