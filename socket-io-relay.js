@@ -38,11 +38,11 @@ var App = function() {
 	console.log(config);
 
 
-	function register(nsp, messages, events) {
-		console.log('Defining namespace', nsp, messages, events);
+	function register(provider, consumer, messages, events) {
+		console.log('Defining namespace', provider, consumer, messages, events);
 
-		var consumerNamespace = io.of('/' + nsp);
-		var providerNamespace = io.of('/' + nsp + '-provider');
+		var providerNamespace = io.of('/' + provider);
+		var consumerNamespace = io.of('/' + consumer);
 
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
@@ -76,10 +76,9 @@ var App = function() {
 
 	}
 
-	for (var nsp in config.namespaces) {
-
-
-		register(nsp, config.namespaces[nsp].messages, config.namespaces[nsp].events);
+	for (var key in config.namespaces) {
+		var entry = config.namespaces[key];
+		register(entry.provider, entry.consumer, entry.messages, entry.events);
 
 	}
 
