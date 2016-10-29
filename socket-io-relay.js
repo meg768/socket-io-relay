@@ -42,10 +42,10 @@ var App = function() {
 
 			console.log('A provider registered service \'%s\'...', options.service);
 
-			socket.join(options.service);
+			// Save the provider, need to emit events to it
+			var provider = socket;
 
-			console.log('Creating namespace', '/' + options.service);
-
+			// Create a new name space with the service name
 			var namespace = io.of('/' + options.service);
 
 			namespace.on('connection', function(socket) {
@@ -61,7 +61,7 @@ var App = function() {
 					options.messages.forEach(function(message) {
 						console.log('Defining message \'%s\'.', message);
 						socket.on(message, function(args) {
-							io.to(options.service).emit(message, args);
+							io.to(provider.id).emit(message, args);
 						});
 
 					});
