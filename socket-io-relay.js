@@ -37,23 +37,17 @@ var App = function() {
 	var config = readJSON(configFile);
 	console.log(config);
 
-	for (var namespace in config.namespaces) {
 
-		console.log('Defining namespace', namespace);
-		console.log(config.namespaces[namespace]);
-		var events   = config.namespaces[namespace].events;
-		var messages = config.namespaces[namespace].messages;
+	function register(nsp, messages, events) {
+		console.log('Defining namespace', nsp);
 
-		var consumerNamespace = io.of('/' + namespace);
-		var providerNamespace = io.of('/' + namespace + '-provider');
-
-		providerNamespace.__events = config.namespaces[namespace].events;
-		consumerNamespace.__messages = config.namespaces[namespace].messages;
+		var consumerNamespace = io.of('/' + nsp);
+		var providerNamespace = io.of('/' + nsp + '-provider');
 
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
 
-			providerNamespace.__events.forEach(function(event) {
+			events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
 				socket.on(event, function(args) {
 					console.log('Sending event', event, args);
@@ -68,7 +62,7 @@ var App = function() {
 		consumerNamespace.on('connection', function(socket) {
 			console.log('New consumer socket connection ', socket.id);
 
-			consumerNamespace.__messages.forEach(function(message) {
+			messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
 				socket.on(message, function(args) {
 					console.log('Sending message', message, args);
@@ -79,6 +73,16 @@ var App = function() {
 
 			socket.emit('hello');
 		});
+
+	}
+
+	for (var nsp in config.namespaces) {
+
+		console.log('Defining namespace', nsp);
+		console.log(config.namespaces[nsp]);
+
+		register(nsp, config.namespaces[nsp].messages, config.namespaces[nsp].events);
+
 	}
 
 
