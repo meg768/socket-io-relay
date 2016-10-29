@@ -39,6 +39,8 @@ var App = function() {
 
 	for (var namespace in config.namespaces) {
 
+		console.log('Defining namespace', namespace);
+		console.log(config.namespaces[namespace]);
 		var events   = config.namespaces[namespace].events;
 		var messages = config.namespaces[namespace].messages;
 
