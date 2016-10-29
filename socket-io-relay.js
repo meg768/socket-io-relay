@@ -45,10 +45,13 @@ var App = function() {
 		var consumerNamespace = io.of('/' + namespace);
 		var providerNamespace = io.of('/' + namespace + '-provider');
 
+		providerNamespace.__events = config.namespaces[namespace].events;
+		consumerNamespace.__messages = config.namespaces[namespace].messages;
+
 		providerNamespace.on('connection', function(socket) {
 			console.log('New provider socket connection ', socket.id);
 
-			events.forEach(function(event) {
+			providerNamespace.__events.forEach(function(event) {
 				console.log('Defining event \'%s\'.', event);
 				socket.on(event, function(args) {
 					console.log('Sending event', event, args);
@@ -63,7 +66,7 @@ var App = function() {
 		consumerNamespace.on('connection', function(socket) {
 			console.log('New consumer socket connection ', socket.id);
 
-			messages.forEach(function(message) {
+			consumerNamespace.__messages.forEach(function(message) {
 				console.log('Defining message \'%s\'.', message);
 				socket.on(message, function(args) {
 					console.log('Sending message', message, args);
